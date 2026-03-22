@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using PiggyBank.Expanses.Features.Categories;
 using PiggyBank.Expanses.Features.Categories.CreateCategory;
 using PiggyBank.Expanses.Features.Categories.DeleteCategory;
@@ -24,6 +25,19 @@ public static class ServiceCollectionExtensions
         services.AddCategoryFeature();
 
         return services;
+    }
+
+    public static async Task BuildExpansesModule(this IServiceProvider serviceProvider, IHostEnvironment environment)
+    {
+        using var scope = serviceProvider.CreateScope();
+
+        if (environment.IsDevelopment())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<ExpensesDbContext>();
+
+            await ExpensesDbContextSeeder.MigrateAsync(context);
+            await ExpensesDbContextSeeder.SeedDataAsync(context);
+        }
     }
 
     private static void AddCategoryFeature(this IServiceCollection services)
