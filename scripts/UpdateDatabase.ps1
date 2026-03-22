@@ -3,4 +3,4 @@ param(
 )
 
 dotnet ef database update `
-  --startup-project ../src/PiggyBank/PiggyBank.Web
+  --startup-project ../src/PiggyBank.Web
