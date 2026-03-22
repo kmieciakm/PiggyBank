@@ -1,0 +1,22 @@
+﻿@page "/NotFound"
+
+<RadzenStack JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center">
+    <RadzenText TextStyle="TextStyle.H2" class="rz-mb-4">
+        404
+    </RadzenText>
+    <RadzenText TextStyle="TextStyle.H6" class="rz-mb-4">
+        We couldn't find the page you're looking for.
+    </RadzenText>
+    <RadzenButton Text="Go home" Click="GoHome"
+                  Size="ButtonSize.Large" ButtonStyle="ButtonStyle.Primary" />
+</RadzenStack>
+
+@code {
+    [Inject]
+    NavigationManager NavigationManager { get; set; } = default!;
+
+    private void GoHome()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+}

@@ -1,0 +1,83 @@
+﻿@page "/Categories"
+
+@using PiggyBank.Expanses.Features.Categories
+@using PiggyBank.Expanses.Features.Categories.CreateCategory
+@using PiggyBank.Expanses.Features.Categories.DeleteCategory
+@using PiggyBank.Expanses.Features.Categories.GetCategories
+@using PiggyBank.Expanses.Shared.Commands
+@using PiggyBank.Expanses.Shared.Models
+@using PiggyBank.Expanses.Shared.Queries
+
+<RadzenText TextStyle="TextStyle.H2">Categories</RadzenText>
+
+<RadzenDataGrid Data="@ExpenseCategories"
+                AllowColumnResize="true"
+                AllowAlternatingRows="false"
+                AllowFiltering="true"
+                FilterMode="FilterMode.Advanced"
+                AllowSorting="true"
+                AllowPaging="true" PageSize="5" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true" PagerAlwaysVisible="true"
+                LogicalFilterOperator="LogicalFilterOperator.Or"
+                AllowRowSelectOnRowClick="false">
+    <Columns>
+        <RadzenDataGridColumn Property="@nameof(CategoryDto.Name)" Title="Category Name" />
+        <RadzenDataGridColumn Property="@nameof(CategoryDto.Color)" Title="Color" />
+        <RadzenDataGridColumn Filterable="false" Sortable="false"
+                              TextAlign="TextAlign.Right"
+                              Frozen="true" FrozenPosition="FrozenColumnPosition.Right">
+            <Template Context="category">
+                <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger"
+                              Variant="Variant.Flat" Size="ButtonSize.Medium" Shade="Shade.Lighter"
+                              Click="@(args => DeleteCategory(category))"
+                              @onclick:stopPropagation="true" />
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+
+<RadzenButton class="rz-mt-2" Click="@CreateCategory" Text="Create Category" />
+
+@code {
+    [Inject]
+    private IQueryDispatcher QueryDispatcher { get; set; } = default!;
+
+    [Inject]
+    private ICommandDispatcher CommandDispatcher { get; set; } = default!;
+
+    private IEnumerable<CategoryDto> ExpenseCategories { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshCategories();
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task RefreshCategories()
+    {
+        ExpenseCategories = await QueryDispatcher
+            .QueryAsync<GetCategories, IEnumerable<CategoryDto>>(
+                new GetCategories());
+    }
+
+    private async Task CreateCategory()
+    {
+        await CommandDispatcher.SendAsync(new CreateCategoryCommand()
+        {
+            Name = "Food",
+            Color = Color.Green
+        });
+
+        await RefreshCategories();
+    }
+
+    private async Task DeleteCategory(CategoryDto categoryDto)
+    {
+        await CommandDispatcher.SendAsync(new DeleteCategoryCommand()
+        {
+            CategoryId = categoryDto.Id
+        });
+
+        await RefreshCategories();
+    }
+}

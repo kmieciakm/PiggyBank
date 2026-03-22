@@ -1,0 +1,26 @@
+﻿@page "/Error"
+
+@using System.Diagnostics
+
+<PageTitle>Error</PageTitle>
+
+<RadzenStack JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center">
+    <RadzenText TextStyle="TextStyle.H2" class="rz-mb-4">
+        Oops!!!
+    </RadzenText>
+    <RadzenText TextStyle="TextStyle.H6" class="rz-mb-4">
+        An unexpected error occured.
+    </RadzenText>
+    <RadzenButton Text="Go home" Click="GoHome"
+                  Size="ButtonSize.Large" ButtonStyle="ButtonStyle.Primary" />
+</RadzenStack>
+
+@code {
+    [Inject]
+    NavigationManager NavigationManager { get; set; } = default!;
+
+    private void GoHome()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+}
