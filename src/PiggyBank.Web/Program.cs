@@ -29,4 +29,6 @@ app.MapRazorComponents<App>()
 
 app.UseStatusCodePagesWithRedirects("/NotFound");
 
+await app.Services.BuildExpansesModule(app.Environment);
+
 app.Run();
